@@ -269,7 +269,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="FontFamily" Value="/Styles/Default/Icons.otf#" />
+        <Setter Property="FontFamily" Value="/Styles/Default/Icons.otf#MediaPlayerIcons" />
         <Setter Property="FontSize" Value="22" />
         <Setter Property="Template">
             <ControlTemplate>
