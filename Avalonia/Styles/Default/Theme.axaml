@@ -232,11 +232,11 @@
                             <Path.Data>
                                 <MultiBinding Converter="{StaticResource BoundsToPathDataConverter}" ConverterParameter="0">
                                     <Binding Path="Bounds" RelativeSource="{RelativeSource TemplatedParent}" />
-                                    <Binding>
-                                        <Binding.Source>
+                                    <ReflectionBinding>
+                                        <ReflectionBinding.Source>
                                             <system:Double>100</system:Double>
-                                        </Binding.Source>
-                                    </Binding>
+                                        </ReflectionBinding.Source>
+                                    </ReflectionBinding>
                                 </MultiBinding>
                             </Path.Data>
                         </Path>
