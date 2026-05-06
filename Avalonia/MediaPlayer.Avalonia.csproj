@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
     <RootNamespace>HanumanInstitute.MediaPlayer.Avalonia</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>

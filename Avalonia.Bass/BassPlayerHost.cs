@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -110,7 +111,15 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     {
         if (!IsInitialized) { return; }
 
-        if (!string.IsNullOrEmpty(value))
+
+    }
+
+    /// <inheritdoc />
+    protected override void SourceStreamChanged(Stream? value)
+    {
+        if (!IsInitialized) { return; }
+
+        if (value != null)
         {
             Status = PlaybackStatus.Loading;
             LoadMedia();
@@ -553,11 +562,11 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         BassDevice.Instance.Init(-1, OutputSampleRate);
         ReleaseChannel();
 
-        if (Source != null)
+        if (SourceStream != null)
         {
             _initLoaded = true;
             // Store locally because properties can't be accessed from new thread.
-            var fileName = Source;
+            var stream = SourceStream;
             var volume = Volume;
             var speed = GetSpeed();
             var rate = Rate;
@@ -571,8 +580,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
                 {
                     ManagedBass.Bass.GetInfo(out _deviceInfo).Valid();
                     var flagFloat = EffectsFloat ? BassFlags.Float : 0;
-                    _chanIn = _chanOut = ManagedBass.Bass
-                        .CreateStream(fileName, Flags: useEffects ? flagFloat | BassFlags.Decode : 0).Valid();
+                    _chanIn = _chanOut = StreamWrapper.CreateFromStream(stream, useEffects ? flagFloat | BassFlags.Decode : 0).Valid();
                     _chanInfo = ManagedBass.Bass.ChannelGetInfo(_chanIn);
                     ManagedBass.Bass.ChannelSetSync(_chanIn, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped)
                         .Valid();

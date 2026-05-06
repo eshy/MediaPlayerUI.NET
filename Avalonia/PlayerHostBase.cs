@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -91,6 +92,32 @@ public abstract class PlayerHostBase : Control
     /// </summary>
     /// <param name="value">The new source.</param>
     protected virtual void SourceChanged(string? value) { }
+    
+    /// <summary>
+    /// Defines the SourceStream property.
+    /// </summary>
+    public static readonly DirectProperty<PlayerHostBase, Stream?> SourceStreamProperty =
+        AvaloniaProperty.RegisterDirect<PlayerHostBase, Stream?>(nameof(SourceStream), o => o.SourceStream, (o, v) => o.SourceStream = v);
+    private Stream? _sourceStream;
+    /// <summary>
+    /// Gets or sets the stream to play.
+    /// </summary>
+    public Stream? SourceStream
+    {
+        get => _sourceStream;
+        set
+        {
+            if (SetAndRaise(SourceStreamProperty, ref _sourceStream, value))
+            {
+                SourceStreamChanged(value);
+            }
+        }
+    }
+    /// <summary>
+    /// Occurs when the SourceStream property is changed. 
+    /// </summary>
+    /// <param name="value">The new source.</param>
+    protected virtual void SourceStreamChanged(Stream? value) { }
 
     /// <summary>
     /// Defines the Position property.
