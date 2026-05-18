@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
@@ -111,7 +111,18 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     {
         if (!IsInitialized) { return; }
 
-
+        if (!string.IsNullOrEmpty(value))
+        {
+            Status = PlaybackStatus.Loading;
+            LoadMedia();
+        } else
+        {
+            Status = PlaybackStatus.Stopped;
+            _isStopping = true;
+            ReleaseChannel();
+            _isStopping = false;
+            PitchError = null;
+        }
     }
 
     /// <inheritdoc />
@@ -562,10 +573,11 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         BassDevice.Instance.Init(-1, OutputSampleRate);
         ReleaseChannel();
 
-        if (SourceStream != null)
+        if (SourceStream != null || Source != null)
         {
             _initLoaded = true;
             // Store locally because properties can't be accessed from new thread.
+            var fileName = Source;
             var stream = SourceStream;
             var volume = Volume;
             var speed = GetSpeed();
@@ -580,7 +592,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
                 {
                     ManagedBass.Bass.GetInfo(out _deviceInfo).Valid();
                     var flagFloat = EffectsFloat ? BassFlags.Float : 0;
-                    _chanIn = _chanOut = StreamWrapper.CreateFromStream(stream, useEffects ? flagFloat | BassFlags.Decode : 0).Valid();
+                    _chanIn = _chanOut = stream != null ? StreamWrapper.CreateFromStream(stream, useEffects ? flagFloat | BassFlags.Decode : 0).Valid() : ManagedBass.Bass.CreateStream(fileName, Flags: useEffects ? flagFloat | BassFlags.Decode : 0).Valid();
                     _chanInfo = ManagedBass.Bass.ChannelGetInfo(_chanIn);
                     ManagedBass.Bass.ChannelSetSync(_chanIn, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped)
                         .Valid();
